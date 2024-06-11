@@ -127,10 +127,12 @@ def timestep_embedding(timesteps, dim, max_period=10000):
     return embedding
 
 
-def torch_checkpoint(func, args, flag, preserve_rng_state=False):
+def torch_checkpoint(func, args, flag, preserve_rng_state=True):
     # torch's gradient checkpoint works with automatic mixed precision, given torch >= 1.8
     if flag:
         return torch.utils.checkpoint.checkpoint(
-            func, *args, preserve_rng_state=preserve_rng_state)
+            func, *args, 
+            use_reentrant=True,
+            preserve_rng_state=preserve_rng_state)
     else:
         return func(*args)
